@@ -16,7 +16,7 @@ const TaskCard = ({ task, onEdit, onDelete, onViewDetails }) => {
   }
 
   return (
-    <div className="bg-white shadow-md p-4 rounded flex flex-col justify-between h-full">
+    <div className="bg-blue-100 shadow-md p-4 rounded flex flex-col justify-between h-full">
       <h3 className="text-lg font-bold truncate">{task.title}</h3>
       <p className='truncate'>{task.description}</p>
       <p className="text-sm text-gray-500 mt-10">Created at: {new Date(task.createdAt).toLocaleString()}</p>

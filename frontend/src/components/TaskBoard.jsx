@@ -12,10 +12,10 @@ const TaskBoard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
-  const { tasks, deleteTask, todoTasks, inProgressTasks, doneTasks, fetchTasks, updateTaskOrder } = useTasks();
+  const { deleteTask, todoTasks, inProgressTasks, doneTasks, fetchTasks, updateTaskOrder } = useTasks();
 
   // Adding search query
-  const [search , setSearch] = useState("");
+  const [search, setSearch] = useState("");
 
   // Adding Sort Options
   const [sort, setSort] = useState("createdAt_asc")
@@ -30,7 +30,7 @@ const TaskBoard = () => {
   // Handling Tasks Crud and Search Sort Start
   useEffect(() => {
     fetchTasks();
-  }, []); 
+  }, []);
 
   const handleAdd = () => {
     setCurrentTask(null); // Set currentTask to null for adding a new task
@@ -136,86 +136,89 @@ const TaskBoard = () => {
           >
             Add Task
           </button>
-          {/* <AddTask
-          isOpen={isModalOpen}
-          onClose={handleModalClose}
-          task={""} */}
-          {/* // key={modalKey} */}
-        {/* /> */}
         </header>
 
         {/* Search and sort container */}
-      <div className="flex justify-between mb-4 shadow-md bg-white p-4 rounded">
-        <div className='flex items-center mb-2'>
-          <label className="mr-2">
-            Search: 
-          </label>
-          <input
-            type="search"
-            placeholder="Search tasks"
-            className="w-full p-2 text-sm text-gray-700"
-            value={search}
-            onChange={handleSearch}
-          />
+        <div className="flex flex-col md:flex-row justify-between mb-4 shadow-md bg-white p-4 rounded space-y-2 md:space-y-0">
+          <div className='flex items-center mb-2 w-1/2 md:w-1/4'>
+            <label className="mr-2 whitespace-nowrap">
+              Search:
+            </label>
+            <input
+              type="search"
+              placeholder="Search tasks"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              value={search}
+              onChange={handleSearch}
+            />
+          </div>
+          <div className='flex items-center mb-2 w-full md:w-auto'>
+            <label className="mr-2 whitespace-nowrap">
+              Sort by: </label>
+            <select className="w-full md:w-auto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 truncate"
+              value={sort}
+              onChange={handleSort}>
+              <option value="">Select an option</option>
+              <option value="createdAt_asc">Created Date (ASC)</option>
+              <option value="createdAt_desc">Created Date (DESC)</option>
+              <option value="updatedAt_asc">Updated Date (ASC)</option>
+              <option value="updatedAt_desc">Updated Date (DESC)</option>
+            </select>
+          </div>
         </div>
-        <div className='flex items-center mb-2'>
-          <label className="mr-2">
-            Sort by: </label>
-          <select className="w-full p-2 text-sm text-gray-700 truncate" value={sort} onChange={handleSort}>
-            <option value="">Select an option</option>
-            <option value="createdAt_asc">Created Date (ASC)</option>
-            <option value="createdAt_desc">Created Date (DESC)</option>
-            <option value="updatedAt_asc">Updated Date (ASC)</option>
-            <option value="updatedAt_desc">Updated Date (DESC)</option>
-          </select>
-        </div>
-      </div>
 
-      {/* Task Board Structure */}
-      <div className="flex flex-wrap justify-center min-h-screen">
-        {loading && <p>Loading...</p>}
-        {!loading && (
-          <>
-            {['todo', 'inprogress', 'done'].map((listId) => (
-              <div 
-              key={listId} 
-              className="w-full md:w-1/2 lg:w-1/3 p-4"
-              onDragOver={handleDragOver}
-                onDrop={() => handleDrop(listId)}
+        {/* Task Board Structure */}
+        <div className="flex flex-wrap justify-center min-h-screen">
+          {loading && <p>Loading...</p>}
+          {!loading && (
+            <>
+              {['todo', 'inprogress', 'done'].map((listId) => (
+                <div
+                  key={listId}
+                  className={`w-full md:w-1/2 lg:w-1/3 p-4 transition-all duration-300 ease-in-out ${getList(listId).length ? 'min-h-[200px] h-auto' : 'h-20'
+                    }`}
+                  onDragOver={handleDragOver}
+                  onDrop={() => handleDrop(listId)}
                 >
-                <div className="bg-white shadow-lg p-4 rounded flex flex-col h-full">
-                  <h2 className="text-lg font-bold text-center bg-blue-500 p-2 rounded">
-                    {listId.toUpperCase()}
-                  </h2>
-                  <ul>
-                    {getList(listId).map((task, index) => (
-                      <li key={task._id} className="mb-2"  draggable
-                      onDragStart={() => handleDragStart(task)}>
-                        <TaskCard
-                          task={task}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                          onViewDetails={handleViewDetails}
-                        />
-                      </li>
-                    ))}
-                  </ul>
+                  <div className={`bg-white shadow-lg p-4 rounded flex flex-col ${getList(listId).length ? 'min-h-[200px] h-auto' : 'h-full'
+                    } transition-all duration-300`}>
+                    <h2 className="text-lg font-bold text-center bg-blue-500 p-2 rounded">
+                      {listId.toUpperCase()}
+                    </h2>
+                    <ul>
+                      {getList(listId).map((task, index) => (
+                        <li key={task._id} className="mt-3" draggable
+                          onDragStart={() => handleDragStart(task)}>
+                          <TaskCard
+                            task={task}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            onViewDetails={handleViewDetails}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Placeholder message when no tasks are present */}
+                    {!getList(listId).length && (
+                      <div className="text-center text-black opacity-50">No tasks available</div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-            <AddTask
-              isOpen={isModalOpen}
-              onClose={handleModalClose}
-              task={currentTask}
-            />
-            <TaskDetailsModal
-              isOpen={isDetailsOpen}
-              onClose={() => setDetailsOpen(false)}
-              task={currentTask}
-            />
-          </>
+              ))}
+              <AddTask
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                task={currentTask}
+              />
+              <TaskDetailsModal
+                isOpen={isDetailsOpen}
+                onClose={() => setDetailsOpen(false)}
+                task={currentTask}
+              />
+            </>
           )
-        }
+          }
         </div>
       </div>
     </div>  // Closing div
