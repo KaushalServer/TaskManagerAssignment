@@ -12,13 +12,15 @@ const TaskBoard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
-  const { tasks, deleteTask, todoTasks, inProgressTasks, doneTasks, fetchTasks } = useTasks();
+  const { tasks, deleteTask, todoTasks, inProgressTasks, doneTasks, fetchTasks, updateTaskOrder } = useTasks();
 
   // Adding search query
   const [search , setSearch] = useState("");
 
   // Adding Sort Options
   const [sort, setSort] = useState("createdAt_asc")
+  // Drag and Drop
+  const [draggedTask, setDraggedTask] = useState(null);
 
   const handleSort = (e) => {
     setSort(e.target.value)
@@ -99,6 +101,28 @@ const TaskBoard = () => {
     }
   };
   // Handling Tasks Crud and Search Sort Stop
+
+  // Handling Drag and Drop
+  // Handle Drag Events
+  const handleDragStart = (task) => {
+    setDraggedTask(task);
+  };
+
+  const handleDrop = (listId) => {
+    if (draggedTask) {
+      const updatedTask = { ...draggedTask, status: listId };  // Assuming 'status' determines the list (todo, inprogress, done)
+      updateTaskOrder(updatedTask);
+      fetchTasks();  // Fetch the updated tasks after reordering
+      setDraggedTask(null); // Reset after drop
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Necessary for allowing the drop
+  };
+
+  // DnD End
+
   return (
     <div>
 
@@ -153,14 +177,20 @@ const TaskBoard = () => {
         {!loading && (
           <>
             {['todo', 'inprogress', 'done'].map((listId) => (
-              <div key={listId} className="w-full md:w-1/2 lg:w-1/3 p-4">
+              <div 
+              key={listId} 
+              className="w-full md:w-1/2 lg:w-1/3 p-4"
+              onDragOver={handleDragOver}
+                onDrop={() => handleDrop(listId)}
+                >
                 <div className="bg-white shadow-lg p-4 rounded flex flex-col h-full">
                   <h2 className="text-lg font-bold text-center bg-blue-500 p-2 rounded">
                     {listId.toUpperCase()}
                   </h2>
                   <ul>
                     {getList(listId).map((task, index) => (
-                      <li key={task._id} className="mb-2">
+                      <li key={task._id} className="mb-2"  draggable
+                      onDragStart={() => handleDragStart(task)}>
                         <TaskCard
                           task={task}
                           onEdit={handleEdit}
