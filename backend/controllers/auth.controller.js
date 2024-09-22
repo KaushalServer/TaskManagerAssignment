@@ -2,6 +2,20 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 
+const profilePictures = [
+    "https://www.svgrepo.com/show/22032/boy.svg",
+    "https://www.svgrepo.com/show/37286/boy.svg",
+    "https://www.svgrepo.com/show/34979/boy.svg",
+    "https://www.svgrepo.com/show/34972/girl.svg",
+    "https://www.svgrepo.com/show/34994/girl.svg",
+    "https://www.svgrepo.com/show/25171/girl.svg",
+];
+
+  // Function to get a random profile picture
+const getRandomProfilePicture = () => {
+    return profilePictures[Math.floor(Math.random() * profilePictures.length)];
+};
+
 export const signup = async (req, res) => {
     // console.log(req.body);
     try {
@@ -24,7 +38,7 @@ export const signup = async (req, res) => {
             })
         }
 
-        const profilePic = `https://avatar.iran.liara.run/username?username=${firstname}+${lastname}`
+        const profilePic = getRandomProfilePicture()
 
         const newUser = new User ({
             firstname,
@@ -136,7 +150,7 @@ export const google = async (req, res) => {
             const firstname = nameParts[0];
             const lastname = nameParts.slice(1).join(" ");
 
-            const profilePic = `https://avatar.iran.liara.run/username?username=${firstname}+${lastname}`
+            const profilePic = getRandomProfilePicture()
 
             const newUser = new User({
                 firstname,
